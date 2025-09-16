@@ -64,3 +64,16 @@ RUN curl -fLo wstunnel.tar.gz https://github.com/erebe/wstunnel/releases/downloa
 
 # 设置 wstunnel 的功能位
 RUN setcap cap_net_bind_service=+ep /usr/local/bin/wstunnel
+
+ENV IDF_PATH "/.embuild/espressif/esp-idf/v5.4.1"
+ENV IDF_TOOLS_PATH "/.embuild/espressif"
+ENV IDF_PYTHON_ENV_PATH "/.embuild/espressif/python_env/idf5.4_py3.11_env"
+
+RUN /.embuild/espressif/python_env/idf5.4_py3.11_env/bin/python /.embuild/espressif/esp-idf/v5.4.1/tools/idf_tools.py install
+
+RUN source /.embuild/espressif/esp-idf/v5.4.1/export.sh
+
+# clan-code-extension
+RUN code-server --uninstall-extension cloudstudio.live-server && \
+    code-server --uninstall-extension tencent-cloud.coding-copilot && \
+    code-server --uninstall-extension cnbcool.cnb-welcome
