@@ -1,0 +1,44 @@
+# .cnb.yml
+$:
+  vscode:
+    - runner:
+        cpus: 8
+      docker:
+        # 指定开发环境镜像，可以是任意可访问的镜像。
+        # 如果 image 指定的镜像中已安装 code-server 代码服务，将使用单容器模式启动开发环境
+        # 如果 image 指定的镜像中未安装 code-server 代码服务，将使用双容器模式启动开发环境
+        # 如下镜像为 CNB 默认开发环境镜像，已安装代码服务，将使用单容器模式启动开发环境
+        # 可按需替换为其他镜像
+        build: 
+          dockerfile: .ide/Dockerfile
+        image: cnbcool/default-dev-env:latest
+      services:
+        - vscode
+        - docker
+      # 开发环境启动后会执行的任务
+      stages:
+        - name: CNB_VSCODE_PROXY_URI
+          script:
+            - echo "# endpoints" >> CNB_VSCODE_PROXY_URI
+            - echo "$CNB_VSCODE_PROXY_URI" >> CNB_VSCODE_PROXY_URI
+            - mkdir -p ./logs
+        - name: nginx-webdav
+        # nginx webDAV 浏览器可浏览全部文件，webDAV 客户端不支持查看 . 开头的文件/文件夹
+          script:
+            - cp .ide/nginx.conf /etc/nginx/
+            - nginx
+            - echo "# nginx-webdav endpoint" >> CNB_VSCODE_PROXY_URI
+            - echo "$CNB_VSCODE_PROXY_URI" | sed "s/{{port}}/4450/" >> CNB_VSCODE_PROXY_URI
+        - name: rclone-wevdav
+        # reclone webDAV 支持全部文件
+          script:
+            - echo "# rclone-webdav endpoint" >> CNB_VSCODE_PROXY_URI
+            - echo "$CNB_VSCODE_PROXY_URI" | sed "s/{{port}}/4451/" >> CNB_VSCODE_PROXY_URI
+            - nohup rclone serve webdav /workspace --addr :4451 --vfs-cache-mode full -L > ./logs/rclone.log 2>&1 &
+        - name: setup
+          script:
+            - chmod +x web-flash.sh
+            - chmod +x /root/export-esp.sh
+            - . /root/export-esp.sh
+            - ln -s /.embuild ./.embuild
+            - ls -alh
