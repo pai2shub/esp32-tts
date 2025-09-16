@@ -15,7 +15,7 @@ MCU="esp32s3"
 ESP_IDF_VERSION = "v5.4.1"
 
 # The directory that has the lvgl config files - lv_conf.h, lv_drv_conf.h
-DEP_LV_CONFIG_PATH = { relative = true, value = "lvgl-configs" }
+DEP_LV_CONFIG_PATH = { relative = true, value = "components/lvgl-configs" }
 
 # Required to make lvgl build correctly otherwise get wrong file type (ie compiled for a big endian system and target is little endian)
 CROSS_COMPILE = "xtensa-esp32s3-elf"
@@ -25,7 +25,7 @@ CROSS_COMPILE = "xtensa-esp32s3-elf"
 CFLAGS_xtensa_esp32s3_espidf="-mlongcalls"
 
 # # Directory for custom fonts (written in C) that Lvgl can use
-LVGL_FONTS_DIR = {relative = true, value = "custom-fonts"}
+LVGL_FONTS_DIR = {relative = true, value = "components/lvgl-custom-fonts"}
 
 # Required for lvgl to build otherwise you will get string.h not found.
 # Verfiy path and toolchain version being used on your PC (esp-14.2.0_20240906)
