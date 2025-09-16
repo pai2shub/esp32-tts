@@ -9,6 +9,7 @@ use esp_idf_svc::{
 use std::ffi::{CStr, CString};
 use std::{ptr, slice};
 
+mod server;
 mod ui_lvgl;
 
 const SAMPLE_RATE: u32 = 16000;
