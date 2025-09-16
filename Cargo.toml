@@ -24,7 +24,7 @@ experimental = ["esp-idf-svc/experimental"]
 
 [dependencies]
 log = "0.4"
-esp-idf-svc = "0.51"
+esp-idf-svc = { version = "0.51", features = ["critical-section", "embassy-time-driver", "embassy-sync"] }
 
 # --- Optional Embassy Integration ---
 # esp-idf-svc = { version = "0.51", features = ["critical-section", "embassy-time-driver", "embassy-sync"] }
@@ -43,6 +43,22 @@ esp-idf-svc = "0.51"
 # esp-idf-svc = { version = "0.51", features = ["embassy-time-driver", "embassy-sync"] }
 # critical-section = { version = "1.1", features = ["std"], default-features = false }
 
+anyhow = "1.0.99"
+
+# LVGL
+lvgl = { version = "0.6.2", default-features = false, features = [
+    "embedded_graphics",
+    "unsafe_no_autoinit",
+    #"lvgl_alloc",
+    #"alloc"
+] }
+
+lvgl-sys = { version = "0.6.2" }
+
+# C String
+cstr_core = "0.2.1"
+cc = "1.2.35"
+
 [build-dependencies]
 embuild = "0.33"
 
@@ -50,3 +66,7 @@ embuild = "0.33"
 remote_component = { name = "espressif/esp-sr", version = "^2.0.0" }
 bindings_header = "components/esp_sr/bindgen.h"
 bindings_module = "esp_sr"
+
+[patch.crates-io]
+lvgl = { git = "https://github.com/enelson1001/lv_binding_rust" }
+lvgl-sys = { git = "https://github.com/enelson1001/lv_binding_rust" }

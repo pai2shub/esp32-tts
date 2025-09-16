@@ -9,6 +9,8 @@ use esp_idf_svc::{
 use std::ffi::{CStr, CString};
 use std::{ptr, slice};
 
+mod ui_lvgl;
+
 const SAMPLE_RATE: u32 = 16000;
 
 fn main() {
@@ -22,6 +24,9 @@ fn main() {
     let peripherals = esp_idf_svc::hal::prelude::Peripherals::take().unwrap();
 
     log::info!("Hello, world!");
+
+    let mut ui = ui_lvgl::UI::new();
+    log_heap();
 
     unsafe {
         log::info!("esp_partition_find_first");
