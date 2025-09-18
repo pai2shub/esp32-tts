@@ -132,7 +132,7 @@ impl UI {
         let mut lbl = Label::create(&mut screen).unwrap();
         lbl.set_align(Align::Center, 0, 0);
         lbl.set_text(
-            CString::new("Rust 嵌入式训练营 lvgl demo2")
+            CString::new("Rust lvgl demo")
                 .unwrap()
                 .as_c_str(),
         );
@@ -150,7 +150,7 @@ impl UI {
             std::thread::sleep(std::time::Duration::from_millis(1000));
 
             lbl.set_text(
-                CString::new(format!("Rust 嵌入式训练营 lvgl demo2, tick {count}"))
+                CString::new(format!("Rust lvgl demo, tick {count}"))
                     .unwrap()
                     .as_c_str(),
             );
