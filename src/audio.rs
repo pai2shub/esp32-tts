@@ -1,5 +1,7 @@
 use esp_idf_svc::hal::i2s::I2sDriver;
 
+use std::sync::mpsc;
+
 use crate::global;
 
 pub struct Audio {
@@ -34,9 +36,16 @@ impl Audio {
         Audio { tx_driver }
     }
 
-    pub fn play(self, data: &[u8]) {
+    fn play(self, data: &[u8]) {
         amplify_pcm_data(&mut data, global::PLAY_GAIN);
         tx_driver.write_all(data, 1000).unwrap();
+    }
+
+    pub fn play_with_tx(self, tx: mpsc::Receiver<&[u8]>) {
+        loop {
+            let data = tx.recv().unwrap();
+            self.play(data);
+        }
     }
 }
 

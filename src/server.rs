@@ -10,6 +10,8 @@ use esp_idf_svc::http::server::EspHttpServer;
 
 use serde::{Deserialize, Serialize};
 
+use crate::global;
+
 pub fn server() -> anyhow::Result<()> {
     log::info!("starting server");
 
@@ -17,7 +19,7 @@ pub fn server() -> anyhow::Result<()> {
 
     server.fn_handler("/", Method::Get, |req| {
         req.into_ok_response()?
-            .write(constant::INDEX_HTML.as_bytes())
+            .write(global::INDEX_HTML.as_bytes())
             .map(|_| ())
     })?;
 
