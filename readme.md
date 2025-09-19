@@ -17,7 +17,7 @@ ESP32-S3 TTS demo
 
 components_esp32s3.lock 在 build 过程中会自动生成
 
-#### config
+#### config tts
 
 sdkconfig.defaults 需要添加
 
@@ -42,3 +42,12 @@ bindings_module = "esp_sr"
 #include "esp_tts_voice_template.h"
 #include "esp_tts_voice_xiaole.h"
 ```
+
+
+#### config lvgl
+
+- 字体转化为 lvgl 代码 https://lvgl.io/tools/fontconverter
+- 将生成的 .c 代码导入到项目中，例如 `custom-fonts2/simhei.c`
+- 根据生成的 .c 代码编写对应的 .h 文件，例如 `custom-fonts2/simhei.h`
+- 在 lvgl.h 中指定 使用的字体
+- 在 `.cargo/config.toml` 中指定使用的字体所属文件夹
