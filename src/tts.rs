@@ -3,12 +3,14 @@ use std::sync::mpsc;
 pub struct TTS {
     voicedata: *const std::ffi::c_void,
     mmap_handle: esp_sr::esp_partition_mmap_handle_t,
+    tts_handle: esp_sr:tts_handle,
 }
 
 impl TTS {
     pub fn new() -> Self {
         let mut voicedata: *const std::ffi::c_void = std::ptr::null();
         let mut mmap_handle: esp_sr::esp_partition_mmap_handle_t;
+        let mut tts_handle;
 
         unsafe {
             log::info!("esp_tts_init");
@@ -52,17 +54,20 @@ impl TTS {
             );
             log::info!("esp_tts_voice_set_init");
 
-            let tts_handle = esp_sr::esp_tts_create(voice);
+            tts_handle = esp_sr::esp_tts_create(voice);
             log::info!("esp_tts_create");
         }
 
         TTS {
             voicedata,
             mmap_handle,
+            tts_handle,
         }
     }
 
     pub fn play(self, data: String, tx: mpsc::Sender<&[u8]>) {
+        let tts_handle = self.tts_handle;
+
         unsafe {
             let prompt = CString::new(data.as_str()).unwrap();
             log::info!("prompt: {}", prompt.to_str().unwrap());
