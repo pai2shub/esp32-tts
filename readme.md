@@ -8,8 +8,8 @@ ESP32-S3 TTS demo
 - click "云原生开发"
 - VSCode open remote project
 - see `CNB_VSCODE_PROXY_URI` file, use `rclone-webdav endpoint` webDAV mount to local pc
-- build vscode terminal `cargo build`
-- flash local pc terminal `flash.sh`
+- build vscode terminal `./build.sh`
+- flash local pc terminal `flash.sh` or `flash.bat`
 
 ### other
 
