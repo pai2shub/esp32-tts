@@ -11,6 +11,7 @@ use std::{ptr, slice};
 
 mod server;
 mod ui_lvgl;
+mod global;
 
 const SAMPLE_RATE: u32 = 16000;
 

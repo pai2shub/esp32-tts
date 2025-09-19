@@ -10,12 +10,6 @@ use esp_idf_svc::http::server::EspHttpServer;
 
 use serde::{Deserialize, Serialize};
 
-// Max payload length
-const MAX_LEN: usize = 128;
-
-// Need lots of stack to parse JSON
-const STACK_SIZE: usize = 10240;
-
 pub fn server() -> anyhow::Result<()> {
     log::info!("starting server");
 
