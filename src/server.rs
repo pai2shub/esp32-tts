@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::sync::{mpsc, Arc};
 
 use core::convert::TryInto;
 
@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::global;
 
-pub fn server() -> anyhow::Result<()> {
+pub fn server(ui_tx: mpsc::Sender<String>, tts_tx: mpsc::Sender<String>) -> anyhow::Result<()> {
     log::info!("starting server");
 
     let mut server = create_server()?;

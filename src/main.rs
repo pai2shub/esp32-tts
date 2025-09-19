@@ -69,6 +69,7 @@ fn main() -> anyhow::Result<()> {
     log::info!("init audio");
     let (tx, rx) = mpsc::channel();
     let (tx2, rx2) = mpsc::channel();
+    let (tx3, rx3) = mpsc::channel();
 
     // init audio
     let i2s1: I2S1 = peripherals.i2s1;
@@ -92,12 +93,12 @@ fn main() -> anyhow::Result<()> {
     log::info!("Wifi AP SSID: {:?}", constant::WIFI_AP_NAME);
     log::info!("Wifi AP IP: {:?}", wifi_ap.ap_netif().get_ip_info()?);
 
-    log_heap();
+    utils::log_heap();
 
-    cfg_server::server()?;
-    log_heap();
+    server::server(tx, tx3)?;
+    utils::log_heap();
 
-    ui.run();
+    ui.run(rx3);
 
     log::error!("restart");
     unsafe { esp_idf_svc::sys::esp_restart() }

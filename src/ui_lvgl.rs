@@ -102,7 +102,7 @@ impl UI {
         Self {}
     }
 
-    pub fn run(&mut self) {
+    pub fn run(&mut self, rx: mpsc::Receiver<String>) {
         log::info!("=============  Registering Display ====================");
         const HOR_RES: u32 = constant::DISPLAY_WIDTH as u32;
         const VER_RES: u32 = constant::DISPLAY_HEIGHT as u32;
@@ -131,29 +131,14 @@ impl UI {
         // Create button label, align in center of button
         let mut lbl = Label::create(&mut screen).unwrap();
         lbl.set_align(Align::Center, 0, 0);
-        lbl.set_text(
-            CString::new("Rust lvgl demo")
-                .unwrap()
-                .as_c_str(),
-        );
+        lbl.set_text(CString::new("Rust lvgl demo").unwrap().as_c_str());
 
-        let mut count = 0;
         loop {
-            count += 1;
-            if count > 100 {
-                count = 1;
-            }
+            let data = rx.recv().unwrap();
+            log::info!("lvgl recv");
             let start = Instant::now();
-
             lvgl::task_handler();
-
-            std::thread::sleep(std::time::Duration::from_millis(1000));
-
-            lbl.set_text(
-                CString::new(format!("Rust lvgl demo, tick {count}"))
-                    .unwrap()
-                    .as_c_str(),
-            );
+            lbl.set_text(CString::new(data).unwrap().as_c_str());
             lvgl::tick_inc(Instant::now().duration_since(start));
         }
     }
