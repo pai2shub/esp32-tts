@@ -1,7 +1,7 @@
 use esp_idf_svc::hal::{gpio::AnyIOPin, i2s::I2S1};
-use std::{os::unix::thread, thread::spawn};
 
 use std::sync::mpsc;
+use std::thread::spawn;
 
 mod audio;
 mod button;

@@ -1,6 +1,4 @@
-use std::sync::{mpsc, Arc};
-
-use core::convert::TryInto;
+use std::sync::mpsc;
 
 use embedded_svc::{
     http::{Headers, Method},
@@ -34,7 +32,7 @@ pub fn server(ui_tx: mpsc::Sender<String>, tts_tx: mpsc::Sender<String>) -> anyh
             .map(|_| ())
     })?;
 
-    server.fn_handler::<anyhow::Error, _>("/api/tts", Method::Post, |mut req| {
+    server.fn_handler::<anyhow::Error, _>("/api/tts", Method::Post, move |mut req| {
         let len = req.content_len().unwrap_or(0) as usize;
         if len > global::MAX_LEN {
             req.into_status_response(413)?
@@ -74,7 +72,7 @@ pub fn server(ui_tx: mpsc::Sender<String>, tts_tx: mpsc::Sender<String>) -> anyh
 
         if let Ok(request) = serde_json::from_slice::<VolumeRequest>(&buf) {
             log::info!("request: {:?}", request);
-            match request.op {
+            match request.op.as_str() {
                 "dec" => {
                     audio::volume_down();
                 }

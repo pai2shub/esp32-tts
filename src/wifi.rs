@@ -1,7 +1,7 @@
 use esp_idf_svc::{
     eventloop::EspSystemEventLoop,
     hal::peripheral,
-    wifi::{AccessPointConfiguration, AuthMethod, BlockingWifi, Configuration, EspWifi},
+    wifi::{AccessPointConfiguration, BlockingWifi, Configuration, EspWifi},
 };
 
 use crate::global;

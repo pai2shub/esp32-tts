@@ -1,6 +1,7 @@
+use std::slice;
 use std::sync::mpsc;
 
-use cstr_core::CString;
+use std::ffi::CString;
 
 use esp_idf_svc::sys::esp_sr;
 

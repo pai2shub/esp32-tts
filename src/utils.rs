@@ -1,3 +1,7 @@
+use std::ptr;
+
+use std::ffi::CStr;
+
 use esp_idf_svc::sys::esp_sr;
 
 pub fn log_heap() {
