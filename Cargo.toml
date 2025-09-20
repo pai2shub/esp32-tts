@@ -63,10 +63,10 @@ cc = "1.2.35"
 [build-dependencies]
 embuild = "0.33"
 
-[[package.metadata.esp-idf-sys.extra_components]]
-remote_component = { name = "espressif/esp-sr", version = "^2.0.0" }
-bindings_header = "components/esp_sr/bindgen.h"
-bindings_module = "esp_sr"
+# [[package.metadata.esp-idf-sys.extra_components]]
+# remote_component = { name = "espressif/esp-sr", version = "^2.0.0" }
+# bindings_header = "components/esp_sr/bindgen.h"
+# bindings_module = "esp_sr"
 
 [patch.crates-io]
 lvgl = { git = "https://github.com/enelson1001/lv_binding_rust" }

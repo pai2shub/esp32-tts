@@ -37,7 +37,7 @@ impl Audio {
     }
 
     fn play(self, data: &[u8]) {
-        amplify_pcm_data(&mut data, global::PLAY_GAIN);
+        amplify_pcm_data(&mut data, global::PLAY_GAIN.get().unwrap().lock().unwrap());
         tx_driver.write_all(data, 1000).unwrap();
     }
 
@@ -64,5 +64,25 @@ fn amplify_pcm_data(input: &mut [u8], gain: u8) {
         let bytes = clamped.to_le_bytes();
         chunk[0] = bytes[0];
         chunk[1] = bytes[1];
+    }
+}
+
+pub fn volume_up() {
+    log::info!("volume_up");
+    if let Some(mutex) = PLAY_GAIN.get() {
+        let mut gain = mutex.lock().unwrap();
+        if *gain < 100 {
+            *gain += 1;
+        }
+    }
+}
+
+pub fn volume_down() {
+    log::info!("volume_down");
+    if let Some(mutex) = PLAY_GAIN.get() {
+        let mut gain = mutex.lock().unwrap();
+        if *gain > 0 {
+            *gain -= 1;
+        }
     }
 }

@@ -10,7 +10,18 @@ use esp_idf_svc::http::server::EspHttpServer;
 
 use serde::{Deserialize, Serialize};
 
+use crate::audio;
 use crate::global;
+
+#[derive(Debug, Deserialize)]
+struct TTSRequest {
+    text: String, // 文本内容
+}
+
+#[derive(Debug, Deserialize)]
+struct VolumeRequest {
+    op: String, // 操作类型: "inc" 或 "dec"
+}
 
 pub fn server(ui_tx: mpsc::Sender<String>, tts_tx: mpsc::Sender<String>) -> anyhow::Result<()> {
     log::info!("starting server");
@@ -31,7 +42,18 @@ pub fn server(ui_tx: mpsc::Sender<String>, tts_tx: mpsc::Sender<String>) -> anyh
             return Ok(());
         }
 
-        // todo
+        let mut buf = vec![0; len];
+        req.read_exact(&mut buf)?;
+        let mut resp = req.into_ok_response()?;
+
+        if let Ok(request) = serde_json::from_slice::<TTSRequest>(&buf) {
+            log::info!("request: {:?}", request);
+            ui_tx.send(request.text.clone());
+            tts_tx.send(request.text);
+        } else {
+            resp.write_all("JSON error".as_bytes())?;
+            return Ok(());
+        }
 
         resp.write_all("{}".as_bytes())?;
         Ok(())
@@ -46,7 +68,27 @@ pub fn server(ui_tx: mpsc::Sender<String>, tts_tx: mpsc::Sender<String>) -> anyh
             return Ok(());
         }
 
-        // todo
+        let mut buf = vec![0; len];
+        req.read_exact(&mut buf)?;
+        let mut resp = req.into_ok_response()?;
+
+        if let Ok(request) = serde_json::from_slice::<VolumeRequest>(&buf) {
+            log::info!("request: {:?}", request);
+            match request.op {
+                "dec" => {
+                    audio::volume_down();
+                }
+                "inc" => {
+                    audio::volume_up();
+                }
+                _ => {
+                    log::warn!("unkonw op: {:?}", request.op);
+                }
+            }
+        } else {
+            resp.write_all("JSON error".as_bytes())?;
+            return Ok(());
+        }
 
         resp.write_all("{}".as_bytes())?;
         Ok(())

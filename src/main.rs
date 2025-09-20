@@ -36,6 +36,8 @@ fn main() -> anyhow::Result<()> {
 
     log::info!("init esp32s3 tts demo");
 
+    global::init();
+
     let mut ui = ui_lvgl::UI::new();
     utils::log_heap();
 
@@ -57,12 +59,14 @@ fn main() -> anyhow::Result<()> {
     thread::spawn(move || loop {
         log::info!("wait_for_any_edge btn_up");
         let e = btn_up.wait_for_any_edge();
+        audio::volume_up();
         log::info!("wait_for_any_edge {:?}", e);
     });
 
     thread::spawn(move || loop {
         log::info!("wait_for_any_edge btn_down");
         let e = btn_down.wait_for_any_edge();
+        audio::volume_down();
         log::info!("wait_for_any_edge {:?}", e);
     });
 
