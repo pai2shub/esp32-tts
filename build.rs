@@ -175,6 +175,11 @@ fn generate_merged_sh(
         "     0x8000 {} \\",
         partition_table_bin_path.to_str().unwrap()
     )?;
+    writeln!(
+        merged_sh_file,
+        r#"     ${{partitions_map["voice_data"]}} {} \"#,
+        "/workspace/assets/esp_tts_voice_data_xiaoxin.dat",
+    )?;
     if copy_srmodels_flag {
         writeln!(
             merged_sh_file,
