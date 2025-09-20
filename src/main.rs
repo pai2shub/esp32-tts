@@ -43,8 +43,12 @@ fn main() -> anyhow::Result<()> {
 
     utils::print_partitions();
 
+    // init ui
+    log::info!("init ui");
     let mut ui = ui_lvgl::UI::new();
 
+    // init button
+    log::info!("init button");
     let mut btn_k0 = button::Button::new(peripherals.pins.gpio0.into(), button::ButtonType::K0)?;
     let mut btn_up = button::Button::new(peripherals.pins.gpio38.into(), button::ButtonType::Up)?;
     let mut btn_down =
@@ -64,12 +68,15 @@ fn main() -> anyhow::Result<()> {
         log::info!("wait_for_any_edge {:?}", e);
     });
 
-    log::info!("init audio");
+    // tts text channel
     let (tx, rx) = mpsc::channel();
+    // tts text to sound channel
     let (tx2, rx2) = mpsc::channel();
+    // ui show text channel
     let (tx3, rx3) = mpsc::channel();
 
     // init audio
+    log::info!("init audio");
     let i2s1: I2S1 = peripherals.i2s1;
     let dout: AnyIOPin = peripherals.pins.gpio7.into();
     let bclk: AnyIOPin = peripherals.pins.gpio15.into();
@@ -80,29 +87,40 @@ fn main() -> anyhow::Result<()> {
     spawn(|| {
         audio.play_with_tx(rx2);
     });
+    utils::log_heap();
 
+    // init tts
+    log::info!("init tts");
     let tts = tts::TTS::new();
     spawn(|| {
         tts.play_with_rx(rx, tx2);
     });
-
-    let wifi_ap = wifi::wifi_ap(peripherals.modem, sysloop.clone())?;
-
-    log::info!("Wifi AP SSID: {:?}", constant::WIFI_AP_NAME);
-    log::info!("Wifi AP IP: {:?}", wifi_ap.ap_netif().get_ip_info()?);
-
     utils::log_heap();
 
+    // init wifi ap
+    log::info!("wifi ap");
+    let wifi_ap = wifi::wifi_ap(peripherals.modem, sysloop.clone())?;
+    log::info!("Wifi AP SSID: {:?}", constant::WIFI_AP_NAME);
+    log::info!("Wifi AP IP: {:?}", wifi_ap.ap_netif().get_ip_info()?);
+    utils::log_heap();
+
+    // show hello text
     tx.clone().send(global::TTS_TEXT_HELLO.to_string());
+    // speak hello
     tx3.clone().send(global::TTS_TEXT_HELLO.to_string());
 
+    // wait k0 button press
     log::info!("wait_for_any_edge btn_k0");
     let _ = btn_k0.wait_for_any_edge();
     log::info!("wait_for_any_edge {:?}", e);
 
+    // start server
+    log::info("start server");
     server::server(tx, tx3)?;
     utils::log_heap();
 
+    // run ui
+    log::info("ui run");
     ui.run(rx3);
 
     log::error!("restart");
