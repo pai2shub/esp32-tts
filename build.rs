@@ -74,7 +74,7 @@ fn copy_srmodels(target_dir: PathBuf) -> bool {
     }
 }
 
-// todo 生成 merged.sh
+// 生成 merged.sh
 fn generate_merged_sh(
     manifest_dir: PathBuf,
     target_dir: PathBuf,
