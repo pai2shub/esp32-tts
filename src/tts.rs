@@ -6,21 +6,22 @@ use std::ffi::CString;
 use esp_idf_svc::sys::esp_sr;
 
 pub struct TTS {
-    voicedata: *const std::ffi::c_void,
     mmap_handle: esp_sr::esp_partition_mmap_handle_t,
-    tts_handle: esp_sr::tts_handle,
+    tts_handle: esp_sr::esp_tts_handle_t,
 }
 
 unsafe impl Send for TTS {}
 
 impl TTS {
     pub fn new() -> Self {
-        let mut voicedata: *const std::ffi::c_void = std::ptr::null();
         let mut mmap_handle: esp_sr::esp_partition_mmap_handle_t;
-        let mut tts_handle;
+        let tts_handle: esp_sr::esp_tts_handle_t;
 
         unsafe {
             log::info!("esp_tts_init");
+
+            let mut voicedata: *const std::ffi::c_void = std::ptr::null();
+            mmap_handle = std::mem::zeroed();
 
             let partition_name = CString::new("voice_data").unwrap();
             let pt = esp_sr::esp_partition_find_first(
@@ -33,9 +34,7 @@ impl TTS {
                     "Couldn't find voice data partition! {}",
                     partition_name.to_str().unwrap()
                 );
-
-                log::error!("restart");
-                unsafe { esp_idf_svc::sys::esp_restart() }
+                esp_idf_svc::sys::esp_restart();
             }
             log::info!(
                 "esp partition find first {}",
@@ -52,8 +51,7 @@ impl TTS {
             );
             if err != esp_sr::ESP_OK {
                 log::error!("Couldn't map voice data partition!");
-                log::error!("restart");
-                unsafe { esp_idf_svc::sys::esp_restart() }
+                esp_idf_svc::sys::esp_restart();
             }
             log::info!("esp partition mmap initialized");
 
@@ -69,7 +67,6 @@ impl TTS {
         }
 
         TTS {
-            voicedata,
             mmap_handle,
             tts_handle,
         }
@@ -99,7 +96,7 @@ impl TTS {
                     (len[0] * 2) as usize, // 总字节数
                 );
 
-                tx.send(pcm_slice);
+                _ = tx.send(pcm_slice);
             }
         }
     }
@@ -110,10 +107,12 @@ impl TTS {
             self.play(data, tx.clone());
         }
     }
+}
 
-    pub fn drop(self) {
-        let mut voicedata = self.voicedata;
-        let mut mmap_handle = self.mmap_handle;
+impl Drop for TTS {
+    fn drop(&mut self) {
+        let mmap_handle = self.mmap_handle;
+        let tts_handle = self.tts_handle;
 
         unsafe {
             esp_sr::esp_tts_stream_reset(tts_handle);

@@ -93,9 +93,9 @@ fn main() -> anyhow::Result<()> {
     utils::log_heap();
 
     // show hello text
-    tx.clone().send(global::TTS_TEXT_HELLO.to_string());
+    _ = tx.clone().send(global::TTS_TEXT_HELLO.to_string());
     // speak hello
-    tx3.clone().send(global::TTS_TEXT_HELLO.to_string());
+    _ = tx3.clone().send(global::TTS_TEXT_HELLO.to_string());
 
     // wait k0 button press
     log::info!("wait_for_any_edge btn_k0");

@@ -26,13 +26,13 @@ pub fn server(ui_tx: mpsc::Sender<String>, tts_tx: mpsc::Sender<String>) -> anyh
 
     let mut server = create_server()?;
 
-    server.fn_handler("/", Method::Get, |req| {
+    _ = server.fn_handler("/", Method::Get, |req| {
         req.into_ok_response()?
             .write(global::INDEX_HTML.as_bytes())
             .map(|_| ())
     })?;
 
-    server.fn_handler::<anyhow::Error, _>("/api/tts", Method::Post, move |mut req| {
+    _ = server.fn_handler::<anyhow::Error, _>("/api/tts", Method::Post, move |mut req| {
         let len = req.content_len().unwrap_or(0) as usize;
         if len > global::MAX_LEN {
             req.into_status_response(413)?
@@ -46,8 +46,8 @@ pub fn server(ui_tx: mpsc::Sender<String>, tts_tx: mpsc::Sender<String>) -> anyh
 
         if let Ok(request) = serde_json::from_slice::<TTSRequest>(&buf) {
             log::info!("request: {:?}", request);
-            ui_tx.send(request.text.clone());
-            tts_tx.send(request.text);
+            _ = ui_tx.send(request.text.clone());
+            _ = tts_tx.send(request.text);
         } else {
             resp.write_all("JSON error".as_bytes())?;
             return Ok(());
@@ -57,7 +57,7 @@ pub fn server(ui_tx: mpsc::Sender<String>, tts_tx: mpsc::Sender<String>) -> anyh
         Ok(())
     });
 
-    server.fn_handler::<anyhow::Error, _>("/api/volume", Method::Put, |mut req| {
+    _ = server.fn_handler::<anyhow::Error, _>("/api/volume", Method::Put, |mut req| {
         let len = req.content_len().unwrap_or(0) as usize;
 
         if len > global::MAX_LEN {
