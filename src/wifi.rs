@@ -4,6 +4,8 @@ use esp_idf_svc::{
     wifi::{AccessPointConfiguration, AuthMethod, BlockingWifi, Configuration, EspWifi},
 };
 
+use crate::global;
+
 pub fn wifi_ap(
     modem: impl peripheral::Peripheral<P = esp_idf_svc::hal::modem::Modem> + 'static,
     sysloop: EspSystemEventLoop,
@@ -13,7 +15,7 @@ pub fn wifi_ap(
     let mut wifi_ap_conf = AccessPointConfiguration::default();
     let mut tap_name = wifi_ap_conf.ssid;
     tap_name.clear();
-    tap_name.push_str(constant::WIFI_AP_NAME).unwrap();
+    tap_name.push_str(global::WIFI_AP_NAME).unwrap();
     wifi_ap_conf.ssid = tap_name;
     wifi.set_configuration(&Configuration::AccessPoint(wifi_ap_conf))?;
 

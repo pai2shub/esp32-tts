@@ -36,7 +36,7 @@ pub fn server(ui_tx: mpsc::Sender<String>, tts_tx: mpsc::Sender<String>) -> anyh
 
     server.fn_handler::<anyhow::Error, _>("/api/tts", Method::Post, |mut req| {
         let len = req.content_len().unwrap_or(0) as usize;
-        if len > MAX_LEN {
+        if len > global::MAX_LEN {
             req.into_status_response(413)?
                 .write_all("Request too big".as_bytes())?;
             return Ok(());
@@ -62,7 +62,7 @@ pub fn server(ui_tx: mpsc::Sender<String>, tts_tx: mpsc::Sender<String>) -> anyh
     server.fn_handler::<anyhow::Error, _>("/api/volume", Method::Put, |mut req| {
         let len = req.content_len().unwrap_or(0) as usize;
 
-        if len > MAX_LEN {
+        if len > global::MAX_LEN {
             req.into_status_response(413)?
                 .write_all("Request too big".as_bytes())?;
             return Ok(());
@@ -101,7 +101,7 @@ pub fn server(ui_tx: mpsc::Sender<String>, tts_tx: mpsc::Sender<String>) -> anyh
 
 fn create_server() -> anyhow::Result<EspHttpServer<'static>> {
     let server_configuration = esp_idf_svc::http::server::Configuration {
-        stack_size: STACK_SIZE,
+        stack_size: global::STACK_SIZE,
         ..Default::default()
     };
 

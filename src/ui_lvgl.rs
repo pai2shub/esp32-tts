@@ -10,7 +10,7 @@ use lvgl::{Align, Color, Display, DrawBuffer, Part, Widget};
 
 use cstr_core::CString;
 
-use crate::constant;
+use crate::global;
 
 fn init_spi() -> Result<(), EspError> {
     use esp_idf_svc::sys::*;
@@ -25,7 +25,7 @@ fn init_spi() -> Result<(), EspError> {
     buscfg.__bindgen_anon_3.quadwp_io_num = GPIO_NUM_NC;
     buscfg.__bindgen_anon_4.quadhd_io_num = GPIO_NUM_NC;
     buscfg.max_transfer_sz =
-        (constant::DISPLAY_WIDTH * constant::DISPLAY_HEIGHT * std::mem::size_of::<u16>()) as i32;
+        (global::DISPLAY_WIDTH * global::DISPLAY_HEIGHT * std::mem::size_of::<u16>()) as i32;
     esp!(unsafe {
         spi_bus_initialize(
             spi_host_device_t_SPI3_HOST,
@@ -104,8 +104,8 @@ impl UI {
 
     pub fn run(&mut self, rx: mpsc::Receiver<String>) {
         log::info!("=============  Registering Display ====================");
-        const HOR_RES: u32 = constant::DISPLAY_WIDTH as u32;
-        const VER_RES: u32 = constant::DISPLAY_HEIGHT as u32;
+        const HOR_RES: u32 = global::DISPLAY_WIDTH as u32;
+        const VER_RES: u32 = global::DISPLAY_HEIGHT as u32;
         const LINES: u32 = 4; // The number of lines (rows) that will be refreshed  was 12
         let draw_buffer = DrawBuffer::<{ (HOR_RES * LINES) as usize }>::default();
         let display = Display::register(draw_buffer, HOR_RES, VER_RES, |refresh| {
