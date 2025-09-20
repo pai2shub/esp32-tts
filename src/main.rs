@@ -99,6 +99,9 @@ fn main() -> anyhow::Result<()> {
 
     utils::log_heap();
 
+    tx.clone().send(global::TTS_TEXT_HELLO.to_string());
+    tx3.clone().send(global::TTS_TEXT_HELLO.to_string());
+
     server::server(tx, tx3)?;
     utils::log_heap();
 
