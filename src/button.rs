@@ -7,7 +7,7 @@ use std::thread::sleep;
 use anyhow::Ok;
 
 use esp_idf_svc::hal::gpio::{AnyIOPin, Input, Pin, PinDriver};
-use esp_idf_sys::EspError;
+use esp_idf_svc::sys::EspError;
 
 #[derive(Debug, Clone, Copy)]
 pub enum ButtonType {
