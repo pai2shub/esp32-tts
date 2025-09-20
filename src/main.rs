@@ -51,12 +51,6 @@ fn main() -> anyhow::Result<()> {
         button::Button::new(peripherals.pins.gpio39.into(), button::ButtonType::Down)?;
 
     thread::spawn(move || loop {
-        log::info!("wait_for_any_edge btn_k0");
-        let e = btn_k0.wait_for_any_edge();
-        log::info!("wait_for_any_edge {:?}", e);
-    });
-
-    thread::spawn(move || loop {
         log::info!("wait_for_any_edge btn_up");
         let e = btn_up.wait_for_any_edge();
         audio::volume_up();
@@ -101,6 +95,10 @@ fn main() -> anyhow::Result<()> {
 
     tx.clone().send(global::TTS_TEXT_HELLO.to_string());
     tx3.clone().send(global::TTS_TEXT_HELLO.to_string());
+
+    log::info!("wait_for_any_edge btn_k0");
+    let _ = btn_k0.wait_for_any_edge();
+    log::info!("wait_for_any_edge {:?}", e);
 
     server::server(tx, tx3)?;
     utils::log_heap();
