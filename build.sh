@@ -1,9 +1,11 @@
 #!/bin/bash
 set -e
 
-source setup-idf.sh
+. /root/export-esp.sh 
 
 cargo build --release
+
+source setup-idf.sh
 
 chmod +x merged.sh
 

@@ -3,7 +3,7 @@ use std::sync::mpsc;
 pub struct TTS {
     voicedata: *const std::ffi::c_void,
     mmap_handle: esp_sr::esp_partition_mmap_handle_t,
-    tts_handle: esp_sr:tts_handle,
+    tts_handle: esp_sr::tts_handle,
 }
 
 impl TTS {

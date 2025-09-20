@@ -1,17 +1,5 @@
-use esp_idf_svc::{
-    hal::{
-        gpio::{AnyIOPin, Gpio0, Input, PinDriver},
-        i2s::{config, I2sDriver, I2S0, I2S1},
-    },
-    io::Read,
-    sys::esp_sr,
-};
-use std::{
-    ffi::{CStr, CString},
-    os::unix::thread,
-    thread::spawn,
-};
-use std::{ptr, slice};
+use esp_idf_svc::hal::{gpio::AnyIOPin, i2s::I2S1};
+use std::{os::unix::thread, thread::spawn};
 
 use std::sync::mpsc;
 
