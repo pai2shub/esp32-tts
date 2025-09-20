@@ -5,3 +5,6 @@ CNB_VSCODE_PROXY_URI
 
 *.log
 /logs
+
+merged.sh
+merged.bin

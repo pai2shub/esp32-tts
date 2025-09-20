@@ -130,7 +130,7 @@ fn generate_merged_sh(
     writeln!(merged_sh_file, "while IFS= read -r line; do")?;
     writeln!(
         merged_sh_file,
-        "    if [[ $line =~ ^(nvs|phy_init|factory|model), ]]; then"
+        "    if [[ $line =~ ^(nvs|phy_init|factory|model|voice_data), ]]; then"
     )?;
     writeln!(
         merged_sh_file,

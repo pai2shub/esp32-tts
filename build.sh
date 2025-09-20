@@ -11,4 +11,4 @@ chmod +x merged.sh
 
 ./merged.sh
 
-rm -rf merged.sh
+# rm -rf merged.sh
