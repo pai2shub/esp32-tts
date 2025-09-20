@@ -33,6 +33,8 @@ fn main() -> anyhow::Result<()> {
     esp_idf_svc::log::EspLogger::initialize_default();
 
     let peripherals = esp_idf_svc::hal::prelude::Peripherals::take().unwrap();
+    let sysloop = esp_idf_svc::eventloop::EspSystemEventLoop::take()?;
+    utils::log_heap();
 
     log::info!("init esp32s3 tts demo");
 
