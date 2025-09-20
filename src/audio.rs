@@ -11,7 +11,7 @@ pub struct Audio<'a> {
     tx_driver: I2sDriver<'a, I2sTx>,
 }
 
-impl Audio<'_, _> {
+impl<'a> Audio<'a> {
     pub fn new(
         i2s1: I2S1,
         dout: AnyIOPin,
@@ -39,17 +39,17 @@ impl Audio<'_, _> {
         Audio { tx_driver }
     }
 
-    fn play(&mut self, data: &[u8]) {
+    fn play(&mut self, data: &mut [u8]) {
         let gain = *global::PLAY_GAIN.get().unwrap().lock().unwrap();
-        let mut data = data;
-        amplify_pcm_data(&mut data, gain);
+        amplify_pcm_data(data, gain);
         self.tx_driver.write_all(data, 1000).unwrap();
     }
 
     pub fn play_with_tx(&mut self, tx: mpsc::Receiver<&[u8]>) {
         loop {
             let data = tx.recv().unwrap();
-            self.play(data);
+            let mut buf = data.to_owned();
+            self.play(&mut buf);
         }
     }
 }

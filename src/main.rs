@@ -28,14 +28,12 @@ fn main() -> anyhow::Result<()> {
 
     global::init();
 
+    // init ui
+    log::info!("init ui");
     let mut ui = ui_lvgl::UI::new();
     utils::log_heap();
 
     utils::print_partitions();
-
-    // init ui
-    log::info!("init ui");
-    let mut ui = ui_lvgl::UI::new();
 
     // init button
     log::info!("init button");
@@ -73,16 +71,16 @@ fn main() -> anyhow::Result<()> {
     let lrclk: AnyIOPin = peripherals.pins.gpio16.into();
     let mclk: Option<AnyIOPin> = None;
 
-    let audio = audio::Audio::new(i2s1, dout, bclk, lrclk, mclk);
-    spawn(|| {
+    let mut audio = audio::Audio::new(i2s1, dout, bclk, lrclk, mclk);
+    spawn(move || {
         audio.play_with_tx(rx2);
     });
     utils::log_heap();
 
     // init tts
     log::info!("init tts");
-    let tts = tts::TTS::new();
-    spawn(|| {
+    let mut tts = tts::TTS::new();
+    spawn(move || {
         tts.play_with_rx(rx, tx2);
     });
     utils::log_heap();

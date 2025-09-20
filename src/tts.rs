@@ -11,6 +11,8 @@ pub struct TTS {
     tts_handle: esp_sr::tts_handle,
 }
 
+unsafe impl Send for TTS {}
+
 impl TTS {
     pub fn new() -> Self {
         let mut voicedata: *const std::ffi::c_void = std::ptr::null();
