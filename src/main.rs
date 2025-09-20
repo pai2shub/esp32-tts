@@ -44,14 +44,14 @@ fn main() -> anyhow::Result<()> {
     let mut btn_down =
         button::Button::new(peripherals.pins.gpio39.into(), button::ButtonType::Down)?;
 
-    thread::spawn(move || loop {
+    spawn(move || loop {
         log::info!("wait_for_any_edge btn_up");
         let e = btn_up.wait_for_any_edge();
         audio::volume_up();
         log::info!("wait_for_any_edge {:?}", e);
     });
 
-    thread::spawn(move || loop {
+    spawn(move || loop {
         log::info!("wait_for_any_edge btn_down");
         let e = btn_down.wait_for_any_edge();
         audio::volume_down();
@@ -90,7 +90,7 @@ fn main() -> anyhow::Result<()> {
     // init wifi ap
     log::info!("wifi ap");
     let wifi_ap = wifi::wifi_ap(peripherals.modem, sysloop.clone())?;
-    log::info!("Wifi AP SSID: {:?}", constant::WIFI_AP_NAME);
+    log::info!("Wifi AP SSID: {:?}", global::WIFI_AP_NAME);
     log::info!("Wifi AP IP: {:?}", wifi_ap.ap_netif().get_ip_info()?);
     utils::log_heap();
 
@@ -101,16 +101,16 @@ fn main() -> anyhow::Result<()> {
 
     // wait k0 button press
     log::info!("wait_for_any_edge btn_k0");
-    let _ = btn_k0.wait_for_any_edge();
+    let e = btn_k0.wait_for_any_edge();
     log::info!("wait_for_any_edge {:?}", e);
 
     // start server
-    log::info("start server");
+    log::info!("start server");
     server::server(tx, tx3)?;
     utils::log_heap();
 
     // run ui
-    log::info("ui run");
+    log::info!("ui run");
     ui.run(rx3);
 
     log::error!("restart");

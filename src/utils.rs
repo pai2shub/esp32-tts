@@ -1,3 +1,5 @@
+use esp_idf_svc::sys::esp_sr;
+
 pub fn log_heap() {
     unsafe {
         use esp_idf_svc::sys::{heap_caps_get_free_size, MALLOC_CAP_INTERNAL, MALLOC_CAP_SPIRAM};

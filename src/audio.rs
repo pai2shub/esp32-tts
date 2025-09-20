@@ -1,14 +1,17 @@
-use esp_idf_svc::hal::i2s::I2sDriver;
+use esp_idf_svc::hal::{
+    gpio::AnyIOPin,
+    i2s::{config, I2sDriver, I2sTx, I2S1},
+};
 
 use std::sync::mpsc;
 
 use crate::global;
 
-pub struct Audio {
-    tx_driver: I2sDriver<'_, I2sTx>,
+pub struct Audio<'a> {
+    tx_driver: I2sDriver<'a, I2sTx>,
 }
 
-impl Audio {
+impl Audio<'_, _> {
     pub fn new(
         i2s1: I2S1,
         dout: AnyIOPin,
@@ -18,7 +21,7 @@ impl Audio {
     ) -> Self {
         let i2s_config = config::StdConfig::new(
             config::Config::default().auto_clear(true),
-            config::StdClkConfig::from_sample_rate_hz(SAMPLE_RATE),
+            config::StdClkConfig::from_sample_rate_hz(global::SAMPLE_RATE),
             config::StdSlotConfig::philips_slot_default(
                 config::DataBitWidth::Bits16,
                 config::SlotMode::Mono,
@@ -36,12 +39,14 @@ impl Audio {
         Audio { tx_driver }
     }
 
-    fn play(self, data: &[u8]) {
-        amplify_pcm_data(&mut data, global::PLAY_GAIN.get().unwrap().lock().unwrap());
-        tx_driver.write_all(data, 1000).unwrap();
+    fn play(&mut self, data: &[u8]) {
+        let gain = *global::PLAY_GAIN.get().unwrap().lock().unwrap();
+        let mut data = data;
+        amplify_pcm_data(&mut data, gain);
+        self.tx_driver.write_all(data, 1000).unwrap();
     }
 
-    pub fn play_with_tx(self, tx: mpsc::Receiver<&[u8]>) {
+    pub fn play_with_tx(&mut self, tx: mpsc::Receiver<&[u8]>) {
         loop {
             let data = tx.recv().unwrap();
             self.play(data);
@@ -69,7 +74,7 @@ fn amplify_pcm_data(input: &mut [u8], gain: u8) {
 
 pub fn volume_up() {
     log::info!("volume_up");
-    if let Some(mutex) = PLAY_GAIN.get() {
+    if let Some(mutex) = global::PLAY_GAIN.get() {
         let mut gain = mutex.lock().unwrap();
         if *gain < 100 {
             *gain += 1;
@@ -79,7 +84,7 @@ pub fn volume_up() {
 
 pub fn volume_down() {
     log::info!("volume_down");
-    if let Some(mutex) = PLAY_GAIN.get() {
+    if let Some(mutex) = global::PLAY_GAIN.get() {
         let mut gain = mutex.lock().unwrap();
         if *gain > 0 {
             *gain -= 1;

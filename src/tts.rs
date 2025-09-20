@@ -1,5 +1,9 @@
 use std::sync::mpsc;
 
+use cstr_core::CString;
+
+use esp_idf_svc::sys::esp_sr;
+
 pub struct TTS {
     voicedata: *const std::ffi::c_void,
     mmap_handle: esp_sr::esp_partition_mmap_handle_t,
@@ -26,7 +30,9 @@ impl TTS {
                     "Couldn't find voice data partition! {}",
                     partition_name.to_str().unwrap()
                 );
-                return;
+
+                log::error!("restart");
+                unsafe { esp_idf_svc::sys::esp_restart() }
             }
             log::info!(
                 "esp partition find first {}",
@@ -43,7 +49,8 @@ impl TTS {
             );
             if err != esp_sr::ESP_OK {
                 log::error!("Couldn't map voice data partition!");
-                return;
+                log::error!("restart");
+                unsafe { esp_idf_svc::sys::esp_restart() }
             }
             log::info!("esp partition mmap initialized");
 
@@ -65,7 +72,7 @@ impl TTS {
         }
     }
 
-    pub fn play(self, data: String, tx: mpsc::Sender<&[u8]>) {
+    pub fn play(&mut self, data: String, tx: mpsc::Sender<&[u8]>) {
         let tts_handle = self.tts_handle;
 
         unsafe {
@@ -94,10 +101,10 @@ impl TTS {
         }
     }
 
-    pub fn play_with_rx(self, rx: mpsc::Receiver<String>, tx: mpsc::Sender<&[u8]>) {
+    pub fn play_with_rx(&mut self, rx: mpsc::Receiver<String>, tx: mpsc::Sender<&[u8]>) {
         loop {
             let data = rx.recv().unwrap();
-            self.play(data, tx);
+            self.play(data, tx.clone());
         }
     }
 
