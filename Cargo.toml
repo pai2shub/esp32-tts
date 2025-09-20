@@ -1,7 +1,7 @@
 [package]
 name = "etts"
 version = "0.1.0"
-authors = ["peishunshi <peishunshi@forensix.cn>"]
+authors = ["pai2s <pai2gsg@gmail.com"]
 edition = "2021"
 resolver = "2"
 rust-version = "1.77"
